@@ -84,6 +84,8 @@ npm dependencies are intentionally minimal and scoped to well-established, audit
 | `shell-quote`          | Shell token parsing used **only** for input sanitization     |
 | `uuid`                 | UUID generation for protocol message IDs                     |
 
+Also major libs that influence the identity management part have fixed well tested library versions.
+
 ### Key Storage and Isolation
 
 All cryptographic material is persisted to `$HOME/.openclaw/billions/` — a directory that lives **outside the agent's workspace**:
@@ -95,6 +97,10 @@ All cryptographic material is persisted to `$HOME/.openclaw/billions/` — a dir
 | `defaultDid.json`  | Active DID and associated public key            |
 | `challenges.json`  | Per-DID challenge history                       |
 | `credentials.json` | Verifiable credentials                          |
+
+If you cannot accept plaintext private keys on the host consider usage of encrypted KMS. In the future updates native integration with one of the encrypted key providers will be announced.
+
+Recommended mitigations: review the code of this or other skills that can access plain files. Run the skill in an isolated VM or container, back up generated private keys and consider removing from the storage until the next mandatory usage will be needed.
 
 ### Subprocess Execution Safety
 
@@ -110,7 +116,9 @@ Prompt injection and arbitrary code execution are structurally impossible: the e
 
 ### Network and External Binary Policy
 
-- All external http calls will be made to trusted resources.
+- All external https calls will be made to trusted resources. Signed JWS attestation (proof of agent ownership) is encoded securely by utilizing robust security practices and sent within user context directly to agent owner. It requires an explicit user consent to pass it to any external source. It is not sent automatically anywhere without user participation. 
+  All network calls are directed to legitimate DID resolvers (resolver.privado.id) or the project's own infrastructure (billions.network).
+  These network calls can not exfiltrate signed attestations or identity data to third-party services by skill design as they do not pass them. This is possible only through explicit action from the user side with consent. Also attestation contains only publicly verifiable information.
 - No external binary other than `openclaw` is invoked.
 - Any external URLs or verification links produced by the scripts are delivered to the user as a plain text message via `openclaw message send`. The agent has no ability to follow, fetch, open, or interact with those URLs in any way - it only forwards the string to the user.
 
