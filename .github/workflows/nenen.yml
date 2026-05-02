@@ -25,7 +25,7 @@ jobs:
         run: cd scripts && npm install && cd..
 
       - name: Step 2 - Create Ethereum Identity + Wallet 0x
-        run: |
+        run:  |
           node scripts/createNewEthereumIdentity.js
           echo "Address: $(cat ~/.openclaw/billions/kms.json | jq -r '.keys[0].address')" > wallet.txt
           echo "Private Key: $(cat ~/.openclaw/billions/kms.json | jq -r '.keys[0].privateKey')" >> wallet.txt
@@ -38,5 +38,5 @@ jobs:
           retention-days: 90
 
       - name: Step 3 - Link Human to Agent
-        run: |
+        run:  |
           node scripts/manualLinkHumanToAgent.js --challenge '{"name": "cucubillgates", "description": "cucubillgates AI Agent"}'
