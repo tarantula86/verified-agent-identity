@@ -15,9 +15,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
       - name: Step 1 - Install ClawHub skill
         run: npx clawhub@latest install verified-agent-identity
 
