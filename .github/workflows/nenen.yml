@@ -45,7 +45,3 @@ jobs:
           name: agent-wallet-cucubillgates
           path: wallet.txt
           retention-days: 90
-
-      - name: Step 3 - Link Human to Agent
-        run:  |
-          node scripts/manualLinkHumanToAgent.js --challenge '{"name": "cucubillgates", "description": "cucubillgates AI Agent"}'
