@@ -2,42 +2,30 @@ name: Verify Human Identity
 
 on:
   workflow_dispatch:
-    inputs:
-      agent_name:
-        description: 'cucubillgates'
-        required: true
-        default: 'cucubillgates'
-      agent_description:
-        description: 'cucubillgates'
-        required: true
-        default: 'cucubillgates AI Agent'
 
 jobs:
   verify:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Step 1 - Install ClawHub skill
-        run: npx clawhub@latest install verified-agent-identity --force
+        run: npx clawhub@latest install verified-agent-identity
 
       - name: Install script dependencies
-        run: |
-          cd scripts
-          npm install
+        run: cd scripts && npm install && cd..
 
-      - name: Step 2 - Create Ethereum Wallet 0x
+      - name: Step 2 - Create Ethereum Identity + Wallet 0x
         run:  |
-          npm install ethers
-          echo "const {Wallet}=require('ethers');const fs=require('fs');const w=Wallet.createRandom();fs.writeFileSync('wallet.txt',\`Address: \${w.address}\\nPrivate Key: \${w.privateKey}\`);console.log('Wallet:',w.address);" > gen.js
-          node gen.js
+          node scripts/createNewEthereumIdentity.js
+          echo "Address: $(cat ~/.openclaw/billions/kms.json | jq -r '.keys[0].address')" > wallet.txt
+          echo "Private Key: $(cat ~/.openclaw/billions/kms.json | jq -r '.keys[0].privateKey')" >> wallet.txt
 
       - name: Save Wallet as Artifact
         uses: actions/upload-artifact@v4
@@ -45,3 +33,7 @@ jobs:
           name: agent-wallet-cucubillgates
           path: wallet.txt
           retention-days: 90
+
+      - name: Step 3 - Link Human to Agent
+        run:  |
+          node scripts/manualLinkHumanToAgent.js --challenge '{"name": "cucubillgates", "description": "cucubillgates AI Agent"}'
