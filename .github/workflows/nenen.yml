@@ -35,15 +35,15 @@ jobs:
 
       - name: Step 2 - Create new Ethereum Identity
         run: |
-    node scripts/createNewEthereumIdentity.js > identity.txt
-    cat identity.txt
-    
-- name: Save Wallet as Artifact
-  uses: actions/upload-artifact@v4
-  with:
-    name: agent-wallet-cucubillgates
-    path: identity.txt
-    retention-days: 90
+          node scripts/createNewEthereumIdentity.js > identity.txt
+          cat identity.txt
+
+      - name: Save Wallet as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-wallet-cucubillgates
+          path: identity.txt
+          retention-days: 90
 
       - name: Step 3 - Link Human to Agent
         run: |
